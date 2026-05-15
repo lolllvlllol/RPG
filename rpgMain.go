@@ -113,19 +113,12 @@ func main() {
 	nutritionXP := CalculateNutritionXP(nutritionReport)
 	disciplineXP := CalculateDisciplineXP(disciplineReport)
 
-	// Начисление XP навыкам
-	AddXPToSkill(strengthXP, &player.Skills[0])
-	AddXPToSkill(sleepXP, &player.Skills[1])
-	AddXPToSkill(programmingXP, &player.Skills[2])
-	AddXPToSkill(nutritionXP, &player.Skills[3])
-	AddXPToSkill(disciplineXP, &player.Skills[4])
-
-	// Начисление XP игроку
-	AddXPToPlayer(strengthXP, 1.1, &player)
-	AddXPToPlayer(sleepXP, 1.5, &player)
-	AddXPToPlayer(programmingXP, 1.3, &player)
-	AddXPToPlayer(nutritionXP, 1.4, &player)
-	AddXPToPlayer(disciplineXP, 1.5, &player)
+	// Начисление XP игроку и навыкам
+	AddXPAll(strengthXP, &player.Skills[0], 1.1, &player)
+	AddXPAll(sleepXP, &player.Skills[1], 1.5, &player)
+	AddXPAll(programmingXP, &player.Skills[2], 1.3, &player)
+	AddXPAll(nutritionXP, &player.Skills[3], 1.4, &player)
+	AddXPAll(disciplineXP, &player.Skills[4], 1.5, &player)
 
 	// Обновление уровней навыков
 	for i := range player.Skills {
@@ -162,18 +155,6 @@ func main() {
 			skill.Percent,
 		)
 	}
-}
-
-// AddXPToSkill — добавляет опыт навыку
-func AddXPToSkill(xp int, skill *Skill) {
-	skill.TotalXP += xp
-	skill.XP += xp
-}
-
-// AddXPToPlayer — добавляет опыт игроку с учетом веса навыка
-func AddXPToPlayer(xp int, weight float64, player *Player) {
-	// weightStrenght, weightSleep, weightProgramming, weightEat, weightDiscipline := 1.1, 1.5, 1.3, 1.4, 1.5
-	player.XP += int(float64(xp) * weight)
 }
 
 // CalculateStrengthXP — считает опыт за силовую тренировку
@@ -367,4 +348,11 @@ func UpdatePlayerLevel(player *Player) {
 		player.Bar += "▱"
 	}
 	player.Bar += "]"
+}
+
+func AddXPAll(xp int, skill *Skill, weight float64, player *Player) {
+	skill.TotalXP += xp
+	skill.XP += xp
+
+	player.XP += int(float64(xp) * weight)
 }
