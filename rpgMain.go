@@ -78,33 +78,13 @@ func main() {
 		},
 	}
 
-	strengthReport := StrengthReport{
-		Weight: 40,
-		Reps:   8,
-		Sets:   3,
-	}
+	strengthReport := StrengthReport{}
+	sleepReport := SleepReport{}
+	programmingReport := ProgrammingReport{}
+	nutritionReport := NutritionReport{}
+	disciplineReport := DisciplineReport{}
 
-	sleepReport := SleepReport{
-		Hours:       9,
-		TargetHours: 8,
-	}
-
-	programmingReport := ProgrammingReport{
-		CodeHours:      3,
-		TaskComplexity: "hard",
-		TaskSolved:     true,
-	}
-
-	nutritionReport := NutritionReport{
-		Calories: 3000,
-		Weight:   70.0,
-	}
-
-	disciplineReport := DisciplineReport{
-		DailyCompleted: true,
-		DailyFailed:    false,
-		StreakDays:     7,
-	}
+	InputInfo(&strengthReport, &sleepReport, &programmingReport, &nutritionReport, &disciplineReport)
 
 	// Подсчёт XP за день
 	strengthXP := CalculateStrengthXP(strengthReport)
@@ -128,33 +108,7 @@ func main() {
 	// Обновление уровня игрока
 	UpdatePlayerLevel(&player)
 
-	fmt.Printf(
-		"=== PLAYER ===\n"+
-			"LVL        %d / 100\n"+
-			"POTENTIAL  %d / 100\n"+
-			"BALANCE    %d / 100\n\n"+
-			"XP         %d / %d\n"+
-			"BAR        %s %d%%\n\n",
-		player.Level,
-		player.PotentialLevel,
-		player.BalanceLimit,
-		player.XP,
-		player.NeedXP,
-		player.Bar,
-		player.Percent,
-	)
-	fmt.Println("=== SKILLS ===")
-	for _, skill := range player.Skills {
-		fmt.Printf(
-			"%-18s LVL %-2d | %-3d / %-3d | %-14s %d%%\n",
-			skill.Name,
-			skill.Level,
-			skill.XP,
-			skill.NeedXP,
-			skill.Bar,
-			skill.Percent,
-		)
-	}
+	ShowPlayer(&player)
 }
 
 // CalculateStrengthXP — считает опыт за силовую тренировку
@@ -182,6 +136,9 @@ func CalculateStrengthXP(report StrengthReport) int {
 		xp += 10
 	}
 
+	if report.Weight <= 0 || report.Reps <= 0 || report.Sets <= 0 {
+		return 0
+	}
 	return xp
 }
 
@@ -290,15 +247,14 @@ func UpdateSkillLevel(skill *Skill) {
 		}
 	}
 
-	needXP := 100 + skill.Level*50
+	//
 
+	needXP := 100 + skill.Level*50
 	skill.NeedXP = needXP
 	skill.LeftXP = needXP - skill.XP
 	skill.Percent = skill.XP * 100 / needXP
-
 	filled := skill.Percent / 10
 	empty := 10 - filled
-
 	skill.Bar = "["
 	for range filled {
 		skill.Bar += "▰"
@@ -331,15 +287,14 @@ func UpdatePlayerLevel(player *Player) {
 
 	player.Level = min(player.BalanceLimit, player.PotentialLevel)
 
-	needXP := 1000 + player.PotentialLevel*500
+	//
 
+	needXP := 1000 + player.PotentialLevel*500
 	player.NeedXP = needXP
 	player.LeftXP = needXP - player.XP
 	player.Percent = player.XP * 100 / needXP
-
 	filled := player.Percent / 10
 	empty := 10 - filled
-
 	player.Bar = "["
 	for range filled {
 		player.Bar += "▰"
@@ -355,4 +310,60 @@ func AddXPAll(xp int, skill *Skill, weight float64, player *Player) {
 	skill.XP += xp
 
 	player.XP += int(float64(xp) * weight)
+}
+
+func InputInfo(s *StrengthReport, sl *SleepReport, p *ProgrammingReport, n *NutritionReport, d *DisciplineReport) {
+	fmt.Println("Введите показатели:")
+	fmt.Println("Введите данные по аспекту - Сила")
+	fmt.Scan(&s.Weight)
+	fmt.Scan(&s.Reps)
+	fmt.Scan(&s.Sets)
+
+	fmt.Println("Введите данные по аспекту - Сон")
+	fmt.Scan(&sl.Hours)
+	sl.TargetHours = 8
+
+	fmt.Println("Введите данные по аспекту - Программирование")
+	fmt.Scan(&p.CodeHours)
+	fmt.Scan(&p.TaskComplexity) // hard, medium, easy
+	fmt.Scan(&p.TaskSolved)     // true, false
+
+	fmt.Println("Введите данные по аспекту - Питание")
+	fmt.Scan(&n.Calories)
+	fmt.Scan(&n.Weight) // float
+
+	fmt.Println("Введите данные по аспекту - Дисциплина")
+	fmt.Scan(&d.DailyCompleted) // true, false
+	fmt.Scan(&d.DailyFailed)    // true, false
+	fmt.Scan(&d.StreakDays)
+}
+
+func ShowPlayer(player *Player) {
+	fmt.Printf(
+		"=== PLAYER ===\n"+
+			"LVL        %d / 100\n"+
+			"POTENTIAL  %d / 100\n"+
+			"BALANCE    %d / 100\n\n"+
+			"XP         %d / %d\n"+
+			"BAR        %s %d%%\n\n",
+		player.Level,
+		player.PotentialLevel,
+		player.BalanceLimit,
+		player.XP,
+		player.NeedXP,
+		player.Bar,
+		player.Percent,
+	)
+	fmt.Println("=== SKILLS ===")
+	for _, skill := range player.Skills {
+		fmt.Printf(
+			"%-18s LVL %-2d | %-3d / %-3d | %-14s %d%%\n",
+			skill.Name,
+			skill.Level,
+			skill.XP,
+			skill.NeedXP,
+			skill.Bar,
+			skill.Percent,
+		)
+	}
 }
