@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
 
 // Player — главный герой / общий профиль
 type Player struct {
@@ -58,57 +62,43 @@ type NutritionReport struct {
 
 // DisciplineReport — отчёт по дисциплине
 type DisciplineReport struct {
-	DailyCompleted bool
-	DailyFailed    bool
-	StreakDays     int
+	DayStatus  string // good / normal / failed
+	StreakDays int
 }
 
 func main() {
-	player := Player{
-		XP:             0,
-		Level:          1,
-		PotentialLevel: 1,
-		BalanceLimit:   1,
-		Skills: []Skill{
-			{Name: "Сила", Level: 1, XP: 0, TotalXP: 0},
-			{Name: "Сон", Level: 1, XP: 0, TotalXP: 0},
-			{Name: "Программирование", Level: 1, XP: 0, TotalXP: 0},
-			{Name: "Питание", Level: 1, XP: 0, TotalXP: 0},
-			{Name: "Дисциплина", Level: 1, XP: 0, TotalXP: 0},
-		},
+	var player Player
+	LoadPlayerJSON(&player)
+	for {
+		var choice int
+
+		fmt.Println("=== MENU ===")
+		fmt.Println("1 — Ввести отчёт за день")
+		fmt.Println("2 — Показать профиль")
+		fmt.Println("3 — Выйти")
+		fmt.Scan(&choice)
+
+		switch choice {
+		case 1:
+			strengthReport := StrengthReport{}
+			sleepReport := SleepReport{}
+			programmingReport := ProgrammingReport{}
+			nutritionReport := NutritionReport{}
+			disciplineReport := DisciplineReport{}
+
+			InputInfo(&strengthReport, &sleepReport, &programmingReport, &nutritionReport, &disciplineReport)
+			ApplyDailyReport(&player, strengthReport, sleepReport, programmingReport, nutritionReport, disciplineReport)
+
+		case 2:
+			ShowPlayer(&player)
+
+		case 3:
+			fmt.Println("Выход")
+			return
+		default:
+			fmt.Println("Неизвестная команда")
+		}
 	}
-
-	strengthReport := StrengthReport{}
-	sleepReport := SleepReport{}
-	programmingReport := ProgrammingReport{}
-	nutritionReport := NutritionReport{}
-	disciplineReport := DisciplineReport{}
-
-	InputInfo(&strengthReport, &sleepReport, &programmingReport, &nutritionReport, &disciplineReport)
-
-	// Подсчёт XP за день
-	strengthXP := CalculateStrengthXP(strengthReport)
-	sleepXP := CalculateSleepXP(sleepReport)
-	programmingXP := CalculateProgrammingXP(programmingReport)
-	nutritionXP := CalculateNutritionXP(nutritionReport)
-	disciplineXP := CalculateDisciplineXP(disciplineReport)
-
-	// Начисление XP игроку и навыкам
-	AddXPAll(strengthXP, &player.Skills[0], 1.1, &player)
-	AddXPAll(sleepXP, &player.Skills[1], 1.5, &player)
-	AddXPAll(programmingXP, &player.Skills[2], 1.3, &player)
-	AddXPAll(nutritionXP, &player.Skills[3], 1.4, &player)
-	AddXPAll(disciplineXP, &player.Skills[4], 1.5, &player)
-
-	// Обновление уровней навыков
-	for i := range player.Skills {
-		UpdateSkillLevel(&player.Skills[i])
-	}
-
-	// Обновление уровня игрока
-	UpdatePlayerLevel(&player)
-
-	ShowPlayer(&player)
 }
 
 // CalculateStrengthXP — считает опыт за силовую тренировку
@@ -212,11 +202,12 @@ func CalculateNutritionXP(report NutritionReport) int {
 func CalculateDisciplineXP(report DisciplineReport) int {
 	xp := 20 // базовый XP за контроль дня
 
-	if report.DailyCompleted {
+	switch report.DayStatus {
+	case "good":
 		xp += 80
-	}
-
-	if report.DailyFailed {
+	case "normal":
+		xp += 30
+	case "failed":
 		xp -= 30
 	}
 
@@ -228,7 +219,7 @@ func CalculateDisciplineXP(report DisciplineReport) int {
 		xp += 30
 	}
 
-	if xp < 0 { //???
+	if xp < 0 {
 		xp = 0
 	}
 
@@ -315,26 +306,36 @@ func AddXPAll(xp int, skill *Skill, weight float64, player *Player) {
 func InputInfo(s *StrengthReport, sl *SleepReport, p *ProgrammingReport, n *NutritionReport, d *DisciplineReport) {
 	fmt.Println("Введите показатели:")
 	fmt.Println("Введите данные по аспекту - Сила")
+	fmt.Println("Введите вес тренажера")
 	fmt.Scan(&s.Weight)
+	fmt.Println("Введите повторения")
 	fmt.Scan(&s.Reps)
+	fmt.Println("Введите подходы")
 	fmt.Scan(&s.Sets)
 
 	fmt.Println("Введите данные по аспекту - Сон")
+	fmt.Println("Введите кол-во часов сна")
 	fmt.Scan(&sl.Hours)
 	sl.TargetHours = 8
 
 	fmt.Println("Введите данные по аспекту - Программирование")
+	fmt.Println("Введите кол-во часов программирования")
 	fmt.Scan(&p.CodeHours)
+	fmt.Println("Введите сложность задачи (hard, medium, easy)")
 	fmt.Scan(&p.TaskComplexity) // hard, medium, easy
-	fmt.Scan(&p.TaskSolved)     // true, false
+	fmt.Println("Введите выполнение задачи (true, false)")
+	fmt.Scan(&p.TaskSolved) // true, false
 
 	fmt.Println("Введите данные по аспекту - Питание")
+	fmt.Println("Введите ккал за день")
 	fmt.Scan(&n.Calories)
+	fmt.Println("Введите свой вес ")
 	fmt.Scan(&n.Weight) // float
 
 	fmt.Println("Введите данные по аспекту - Дисциплина")
-	fmt.Scan(&d.DailyCompleted) // true, false
-	fmt.Scan(&d.DailyFailed)    // true, false
+	fmt.Println("Введите статус дня: good / normal / failed")
+	fmt.Scan(&d.DayStatus)
+	fmt.Println("Введите серию дней")
 	fmt.Scan(&d.StreakDays)
 }
 
@@ -365,5 +366,69 @@ func ShowPlayer(player *Player) {
 			skill.Bar,
 			skill.Percent,
 		)
+	}
+}
+
+func ApplyDailyReport(player *Player, strength StrengthReport, sleep SleepReport, programming ProgrammingReport, nutrition NutritionReport, discipline DisciplineReport) {
+	// Подсчёт XP за день
+	strengthXP := CalculateStrengthXP(strength)
+	sleepXP := CalculateSleepXP(sleep)
+	programmingXP := CalculateProgrammingXP(programming)
+	nutritionXP := CalculateNutritionXP(nutrition)
+	disciplineXP := CalculateDisciplineXP(discipline)
+
+	// Начисление XP игроку и навыкам
+	AddXPAll(strengthXP, &player.Skills[0], 1.1, player)
+	AddXPAll(sleepXP, &player.Skills[1], 1.5, player)
+	AddXPAll(programmingXP, &player.Skills[2], 1.3, player)
+	AddXPAll(nutritionXP, &player.Skills[3], 1.4, player)
+	AddXPAll(disciplineXP, &player.Skills[4], 1.5, player)
+
+	// Обновление уровней навыков
+	for i := range player.Skills {
+		UpdateSkillLevel(&player.Skills[i])
+	}
+
+	// Обновление уровня игрока
+	UpdatePlayerLevel(player)
+	// Сохранение данных игрока в JSON
+	SavePlayerJSON(*player)
+}
+
+func LoadPlayerJSON(player *Player) {
+	data, err := os.ReadFile("save.json")
+	if err != nil {
+		fmt.Println(err)
+		*player = Player{
+			XP:             0,
+			Level:          1,
+			PotentialLevel: 1,
+			BalanceLimit:   1,
+			Skills: []Skill{
+				{Name: "Сила", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Сон", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Программирование", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Питание", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Дисциплина", Level: 1, XP: 0, TotalXP: 0},
+			},
+		}
+	} else {
+		err = json.Unmarshal(data, player)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+}
+
+func SavePlayerJSON(player Player) {
+	data, err := json.MarshalIndent(player, "", "    ")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if err := os.WriteFile("save.json", data, 0644); err != nil {
+		fmt.Println(err)
+		return
 	}
 }
