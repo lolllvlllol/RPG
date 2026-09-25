@@ -16,8 +16,8 @@ func main() {
 		fmt.Println("=== MENU ===")
 		fmt.Println("1 — Ввести отчёт за день")
 		fmt.Println("2 — Показать профиль")
-		fmt.Println("3 — Выйти")
-		fmt.Println("4 — Показать ежедневные миссии")
+		fmt.Println("3 — Показать ежедневные миссии")
+		fmt.Println("4 — Выйти")
 		fmt.Scan(&choice)
 
 		switch choice {
@@ -35,10 +35,10 @@ func main() {
 			iointerface.ShowPlayer(&player)
 
 		case 3:
+			workjson.ReadNissionJSON()
+		case 4:
 			fmt.Println("Выход")
 			return
-		case 4:
-			workjson.ReadNissionJSON()
 		default:
 			fmt.Println("Неизвестная команда")
 		}

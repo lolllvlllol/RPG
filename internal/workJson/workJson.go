@@ -6,6 +6,7 @@ import (
 	"RPG/internal/update"
 	"encoding/json"
 	"fmt"
+	"math/rand/v2"
 	"os"
 )
 
@@ -88,7 +89,13 @@ func ReadNissionJSON() {
 		return
 	}
 
-	for _, mission := range missions {
+	rand.Shuffle(len(missions), func(i, j int) {
+		missions[i], missions[j] = missions[j], missions[i]
+	})
+
+	dailyMissions := missions[:5]
+
+	for _, mission := range dailyMissions {
 		fmt.Println("Миссия:", mission.Name)
 		fmt.Println("Описание:", mission.Description)
 		fmt.Println("Очки:", mission.Points, "MP")

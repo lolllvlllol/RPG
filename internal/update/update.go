@@ -14,8 +14,6 @@ func UpdateSkillLevel(skill *model.Skill) {
 		}
 	}
 
-	//
-
 	needXP := 100 + skill.Level*50
 	skill.NeedXP = needXP
 	skill.LeftXP = needXP - skill.XP
