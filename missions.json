@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Тренировка",
+    "description": "Провести тренировку",
+    "points": 50,
+    "skill": "Strength",
+    "xp": 50
+  },
+  {
+    "id": 2,
+    "name": "Программирование",
+    "description": "Программировать минимум 1 час",
+    "points": 40,
+    "skill": "Programming",
+    "xp": 40
+  },
+  {
+    "id": 3,
+    "name": "Прогулка",
+    "description": "Пройти 8000 шагов",
+    "points": 30,
+    "skill": "Discipline",
+    "xp": 30
+  }
+]
