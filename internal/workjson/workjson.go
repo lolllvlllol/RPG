@@ -75,18 +75,18 @@ func SavePlayerJSON(player model.Player) {
 	}
 }
 
-func ReadNissionJSON() {
+func ReadMissionJSON() []model.Mission {
 	var missions []model.Mission
 	data, err := os.ReadFile("missions.json")
 	if err != nil {
 		fmt.Println("Ошибка:", err)
-		return
+		return nil
 	}
 
 	err = json.Unmarshal(data, &missions)
 	if err != nil {
 		fmt.Println("Ошибка:", err)
-		return
+		return nil
 	}
 
 	rand.Shuffle(len(missions), func(i, j int) {
@@ -103,4 +103,5 @@ func ReadNissionJSON() {
 		fmt.Println("Опыт:", mission.XP, "XP")
 		fmt.Println("----------------------")
 	}
+	return dailyMissions
 }

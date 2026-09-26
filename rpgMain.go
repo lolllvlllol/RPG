@@ -1,6 +1,7 @@
 package main
 
 import (
+	"RPG/internal/calculate"
 	"RPG/internal/iointerface"
 	"RPG/internal/model"
 	"RPG/internal/workjson"
@@ -9,6 +10,7 @@ import (
 
 func main() {
 	var player model.Player
+	var dailyMissions []model.Mission
 	workjson.LoadPlayerJSON(&player)
 	for {
 		var choice int
@@ -17,7 +19,8 @@ func main() {
 		fmt.Println("1 — Ввести отчёт за день")
 		fmt.Println("2 — Показать профиль")
 		fmt.Println("3 — Показать ежедневные миссии")
-		fmt.Println("4 — Выйти")
+		fmt.Println("4 — Записать ежедневные миссии")
+		fmt.Println("5 — Выйти")
 		fmt.Scan(&choice)
 
 		switch choice {
@@ -33,10 +36,11 @@ func main() {
 
 		case 2:
 			iointerface.ShowPlayer(&player)
-
 		case 3:
-			workjson.ReadNissionJSON()
+			dailyMissions = workjson.ReadMissionJSON()
 		case 4:
+			calculate.CalculateDailyMissions(dailyMissions, &player)
+		case 5:
 			fmt.Println("Выход")
 			return
 		default:

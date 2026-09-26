@@ -133,3 +133,30 @@ func CalculateDisciplineXP(report model.DisciplineReport) int {
 
 	return xp
 }
+
+func CalculateDailyMissions(missions []model.Mission, player *model.Player) {
+	var count int
+	var number int
+	var point int
+	fmt.Println("Сколько миссий выполнено?")
+	fmt.Scan(&count)
+	for range count {
+		fmt.Println("Введите ID миссии")
+		fmt.Scan(&number)
+		for _, mission := range missions {
+			if number == mission.ID {
+				for v := range player.Skills {
+					if player.Skills[v].Name == mission.Skill {
+						player.Skills[v].XP += mission.XP
+						point += mission.Points
+					}
+				}
+			}
+		}
+	}
+	if point >= 100 {
+		fmt.Println("Миссии выполнены")
+	} else {
+		fmt.Println("Миссии провалены")
+	}
+}
