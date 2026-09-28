@@ -46,11 +46,11 @@ func LoadPlayerJSON(player *model.Player) {
 			PotentialLevel: 1,
 			BalanceLimit:   1,
 			Skills: []model.Skill{
-				{Name: "Сила", Level: 1, XP: 0, TotalXP: 0},
-				{Name: "Сон", Level: 1, XP: 0, TotalXP: 0},
-				{Name: "Программирование", Level: 1, XP: 0, TotalXP: 0},
-				{Name: "Питание", Level: 1, XP: 0, TotalXP: 0},
-				{Name: "Дисциплина", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Strength", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Sleep", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Programming", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Nutrition", Level: 1, XP: 0, TotalXP: 0},
+				{Name: "Discipline", Level: 1, XP: 0, TotalXP: 0},
 			},
 		}
 	} else {

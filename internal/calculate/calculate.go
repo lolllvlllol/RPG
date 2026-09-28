@@ -2,6 +2,7 @@ package calculate
 
 import (
 	"RPG/internal/model"
+	"RPG/internal/update"
 	"fmt"
 )
 
@@ -135,28 +136,65 @@ func CalculateDisciplineXP(report model.DisciplineReport) int {
 }
 
 func CalculateDailyMissions(missions []model.Mission, player *model.Player) {
-	var count int
-	var number int
-	var point int
+	var count, number, point int
+	var idnumber []int
+	var alreadyUsed, missionFound bool
+	var foundMission model.Mission
 	fmt.Println("Сколько миссий выполнено?")
 	fmt.Scan(&count)
-	for range count {
-		fmt.Println("Введите ID миссии")
-		fmt.Scan(&number)
-		for _, mission := range missions {
-			if number == mission.ID {
+
+	if count >= 0 && count <= 5 {
+		for len(idnumber) < count {
+			fmt.Println("Введите ID миссии")
+			fmt.Scan(&number)
+			missionFound = false
+			alreadyUsed = false
+
+			for _, mission := range missions {
+				if number == mission.ID {
+					missionFound = true
+					foundMission = mission
+				}
+			}
+
+			if !missionFound {
+				fmt.Println("ID такого нет")
+			} else {
+				for _, v := range idnumber {
+					if v == number {
+						alreadyUsed = true
+					}
+				}
+			}
+
+			if alreadyUsed {
+				fmt.Println("ID уже был введен")
+			}
+
+			if missionFound && !alreadyUsed {
+				idnumber = append(idnumber, number)
+
 				for v := range player.Skills {
-					if player.Skills[v].Name == mission.Skill {
-						player.Skills[v].XP += mission.XP
-						point += mission.Points
+					if player.Skills[v].Name == foundMission.Skill {
+						update.AddXPAll(
+							foundMission.XP,
+							&player.Skills[v],
+							1.0,
+							player,
+						)
+						update.UpdateSkillLevel(&player.Skills[v])
+						point += foundMission.Points
 					}
 				}
 			}
 		}
-	}
-	if point >= 100 {
-		fmt.Println("Миссии выполнены")
+		update.UpdatePlayerLevel(player)
+		if point >= 100 {
+			fmt.Println("Миссии выполнены")
+		} else {
+			fmt.Println("Миссии провалены")
+		}
 	} else {
-		fmt.Println("Миссии провалены")
+		fmt.Println("Максимум 5 миссий в день")
 	}
 }

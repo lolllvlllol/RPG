@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "Тренировка",
+    "name": "Strength",
     "description": "Провести тренировку",
     "points": 50,
     "skill": "Strength",
@@ -9,7 +9,7 @@
   },
   {
     "id": 2,
-    "name": "Программирование",
+    "name": "Programming",
     "description": "Программировать минимум 1 час",
     "points": 40,
     "skill": "Programming",
@@ -17,7 +17,7 @@
   },
   {
     "id": 3,
-    "name": "Прогулка",
+    "name": "Discipline",
     "description": "Пройти 8000 шагов",
     "points": 30,
     "skill": "Discipline",
@@ -25,7 +25,7 @@
   },
   {
     "id": 4,
-    "name": "Тренировка",
+    "name": "Strength",
     "description": "Провести тренировку",
     "points": 50,
     "skill": "Strength",
@@ -33,7 +33,7 @@
   },
   {
     "id": 5,
-    "name": "Программирование",
+    "name": "Programming",
     "description": "Программировать минимум 1 час",
     "points": 40,
     "skill": "Programming",
@@ -41,7 +41,7 @@
   },
   {
     "id": 6,
-    "name": "Прогулка",
+    "name": "Discipline",
     "description": "Пройти 8000 шагов",
     "points": 30,
     "skill": "Discipline",
