@@ -1,26 +1,26 @@
 package model
 
-// Player — главный герой / общий профиль
+// Player хранит общее состояние игрока и прогресс его навыков.
 type Player struct {
-	XP             int // XP внутри текущего потенциального уровня
-	Level          int // текущий уровень с учетом баланса
-	PotentialLevel int // уровень, который игрок заслужил по XP
-	BalanceLimit   int // ограничение уровня по среднему уровню навыков
+	XP             int // Опыт внутри текущего потенциального уровня.
+	Level          int // Фактический уровень с учётом ограничения баланса.
+	PotentialLevel int // Уровень, достигнутый на основе накопленного опыта.
+	BalanceLimit   int // Максимальный доступный уровень с учётом развития навыков.
 
-	Percent int    // процент заполнения XP-бара
-	NeedXP  int    // сколько XP нужно до следующего уровня
-	LeftXP  int    // сколько XP осталось до следующего уровня
-	Bar     string // визуальная шкала XP
+	Percent int    // Процент заполнения шкалы опыта.
+	NeedXP  int    // Опыт, необходимый для перехода на следующий уровень.
+	LeftXP  int    // Опыт, оставшийся до следующего уровня.
+	Bar     string // Текстовое представление шкалы прогресса.
 
-	Skills []Skill // список навыков игрока
+	Skills []Skill // Навыки игрока и их текущий прогресс.
 }
 
-// Skill — один аспект жизни: сила, сон, питание и т.д.
+// Skill описывает отдельный развиваемый навык игрока.
 type Skill struct {
 	Name    string
 	Level   int
-	XP      int // XP внутри текущего уровня навыка
-	TotalXP int // общий XP навыка за всё время, пока оставляем на будущее
+	XP      int // Опыт внутри текущего уровня навыка.
+	TotalXP int // Общий опыт навыка за всё время.
 
 	Percent int
 	NeedXP  int
@@ -28,39 +28,39 @@ type Skill struct {
 	Bar     string
 }
 
-// StrengthReport — отчёт по силовой тренировке
+// StrengthReport содержит данные отчёта о силовой тренировке.
 type StrengthReport struct {
-	Weight float64 // рабочий вес
-	Reps   int     // повторения
-	Sets   int     // подходы
+	Weight float64 // Рабочий вес.
+	Reps   int     // Количество повторений.
+	Sets   int     // Количество подходов.
 }
 
-// SleepReport — отчёт по сну
+// SleepReport содержит данные отчёта о продолжительности сна.
 type SleepReport struct {
-	Hours       int // сколько часов спал
-	TargetHours int // сколько часов нужно
+	Hours       int // Фактическая продолжительность сна.
+	TargetHours int // Целевая продолжительность сна.
 }
 
-// ProgrammingReport — отчёт по программированию
+// ProgrammingReport содержит данные отчёта о занятии программированием.
 type ProgrammingReport struct {
 	CodeHours      int
-	TaskComplexity string // easy / medium / hard
+	TaskComplexity string // Допустимые значения: easy, medium, hard.
 	TaskSolved     bool
 }
 
-// NutritionReport — отчёт по питанию
+// NutritionReport содержит данные отчёта о питании.
 type NutritionReport struct {
 	Calories int
 	Weight   float64
 }
 
-// DisciplineReport — отчёт по дисциплине
+// DisciplineReport содержит данные для оценки дисциплины за день.
 type DisciplineReport struct {
-	DayStatus  string // good / normal / failed
-	StreakDays int
+	DayStatus  string // Допустимые значения: good, normal, failed.
+	StreakDays int    // Продолжительность текущей серии дней.
 }
 
-// Mission - набор всяких дневных миссий в json созданных по структуре
+// Mission описывает ежедневную миссию и награду за её выполнение.
 type Mission struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -68,4 +68,12 @@ type Mission struct {
 	Points      int    `json:"points"`
 	Skill       string `json:"skill"`
 	XP          int    `json:"xp"`
+}
+
+// DailyState хранит состояние ежедневных миссий.
+// Оно сохраняется между запусками программы и обновляется при смене календарного дня.
+type DailyState struct {
+	Date      string    // Дата, для которой был сформирован набор миссий.
+	Missions  []Mission // Миссии, выбранные на текущий день.
+	Completed bool      // Показывает, сдавались ли миссии в этот день.
 }
