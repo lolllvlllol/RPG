@@ -99,21 +99,33 @@ func main() {
 			loaded := workjson.LoadDailyStateJSON(&dailyState)
 
 			if loaded {
-				if !dailyState.Completed {
-					// Для начисления награды используются именно миссии,
-					// сохранённые в состоянии текущего дня.
-					calculate.CalculateDailyMissions(
-						dailyState.Missions,
-						&player,
-					)
+				if update.IsDailyStateToday(dailyState) {
+					if !dailyState.Completed {
+						// Для начисления награды используются именно миссии,
+						// сохранённые в состоянии текущего дня.
+						calculate.CalculateDailyMissions(
+							dailyState.Missions,
+							&player,
+						)
 
-					// После первой сдачи блокируем повторное получение награды
-					// и сохраняем обновлённое состояние дня.
-					dailyState.Completed = true
-					workjson.SaveDailyStateJSON(dailyState)
+						// После первой сдачи блокируем повторное получение награды
+						// и сохраняем обновлённое состояние дня.
+						dailyState.Completed = true
+						workjson.SaveDailyStateJSON(dailyState)
+					} else {
+						fmt.Println("Миссии уже сдавались")
+					}
 				} else {
-					fmt.Println("Миссии уже сдавались")
+					fmt.Println("Дата не соответствует. Загрузка новых миссий...")
+					dailyMissions = workjson.ReadMissionJSON()
+					dailyState = update.TodayDailyState(dailyMissions)
+					workjson.SaveDailyStateJSON(dailyState)
 				}
+			} else {
+				fmt.Println("Миссий нет. Загрузка новых миссий...")
+				dailyMissions = workjson.ReadMissionJSON()
+				dailyState = update.TodayDailyState(dailyMissions)
+				workjson.SaveDailyStateJSON(dailyState)
 			}
 
 			// Сохраняем изменения XP и уровней игрока отдельно

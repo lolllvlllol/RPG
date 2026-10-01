@@ -71,6 +71,10 @@ func LoadPlayerJSON(player *model.Player) {
 				{Name: "Discipline", Level: 1, XP: 0, TotalXP: 0},
 			},
 		}
+		for i := range player.Skills {
+			update.UpdateSkillLevel(&player.Skills[i])
+		}
+		update.UpdatePlayerLevel(player)
 	} else {
 		// Преобразуем сохранённый JSON обратно в структуру Player.
 		// Указатель позволяет заполнить исходную переменную игрока.
@@ -163,6 +167,10 @@ func ReadMissionJSON() []model.Mission {
 	})
 
 	// После перемешивания первые пять элементов становятся миссиями дня.
+	if len(missions) < 5 {
+		fmt.Println("миссий недостаточно")
+		return nil
+	}
 	dailyMissions := missions[:5]
 
 	return dailyMissions
